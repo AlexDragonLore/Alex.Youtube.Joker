@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Alex.Youtube.Joker</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Google.Apis.YouTube.v3" Version="1.68.0.3608" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Alex.YouTube.Joker.Domain\Alex.YouTube.Joker.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
