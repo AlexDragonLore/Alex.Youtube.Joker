@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using Alex.YouTube.Joker.Host;
 using Alex.YouTube.Joker.Host.Facades;
 
 var builder = WebApplication.CreateBuilder(args);

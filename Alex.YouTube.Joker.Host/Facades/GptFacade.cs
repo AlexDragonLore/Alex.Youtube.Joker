@@ -30,7 +30,7 @@ namespace Alex.YouTube.Joker.Host.Facades
                 "application/json");
 
             using var response =
-                await _httpClient.PostAsync("/v1/chat/completions", requestContent, token);
+                await _httpClient.PostAsync("v1/chat/completions", requestContent, token);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -57,8 +57,6 @@ namespace Alex.YouTube.Joker.Host.Facades
 
             var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8,
                 "application/json");
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAiApiKey);
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/audio/speech")
