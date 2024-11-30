@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Alex.YouTube.Joker.Domain;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
@@ -10,7 +6,7 @@ using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 
-namespace Alex.Youtube.Joker.Facades
+namespace Alex.YouTube.Joker.Host.Facades
 {
     public class YouTubeFacade
     {
