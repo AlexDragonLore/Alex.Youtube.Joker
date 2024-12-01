@@ -24,6 +24,7 @@ builder.Services.AddScoped<IJokeService, JokeService>();
 builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddScoped<IContentGenerator, ContentGenerator>();
 builder.Services.AddScoped<IYouTubeFacade, YouTubeFacade>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 
 var app = builder.Build();

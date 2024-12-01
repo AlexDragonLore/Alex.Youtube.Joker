@@ -50,6 +50,14 @@ public class ContentGenerator : IContentGenerator
         var outputFull = $"C:\\Users\\Dunts\\youtube\\joke_{seed}.mp4";
         
         await _videoService.UnionVideos(outputVideos, outputFull, token);
+
+        foreach (var uVideo in outputVideos)
+        {
+            if (File.Exists(uVideo))
+            {
+                File.Delete(uVideo);
+            }       
+        }
         
         _logger.LogInformation("Full video generated for joke {theme}", theme);
         

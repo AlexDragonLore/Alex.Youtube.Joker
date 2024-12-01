@@ -9,16 +9,18 @@ public class VideoService : IVideoService
     {
         // Установите путь к FFmpeg
         FFmpeg.SetExecutablesPath(@"C:\Users\Dunts\ffmpeg\bin");
-
-        // Добавление изображения и аудио в видео
+        
+        // Создание видео из изображения и аудио
         var conversion = FFmpeg.Conversions.New()
             .AddParameter($"-loop 1 -i \"{request.ImagePath}\"") // Изображение
             .AddParameter($"-i \"{request.AudioPath}\"") // Аудио
             .SetOutput(request.OutputVideoPath)
-            .AddParameter($"-vf \"drawtext=text='{request.ThemeText}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=50," +
-                          $"drawtext=text='{request.JokeText}':fontcolor=white:fontsize=36:x=(w-text_w)/2:y=h-100\"")
             .AddParameter("-s 1080x1920") // Размер видео
-            .AddParameter("-shortest"); // Длина видео = длина аудио
+            .AddParameter("-shortest") // Длина видео равна длине аудио
+            .AddParameter("-c:v libx264") // Кодек H.264
+            .AddParameter("-pix_fmt yuv420p") // Совместимость с видеопроигрывателями
+            .AddParameter("-preset fast") // Баланс скорости и качества
+            .AddParameter("-crf 23"); // Контроль качества
 
         await conversion.Start(token);
     }
@@ -33,8 +35,8 @@ public class VideoService : IVideoService
         // Создаем временный файл для списка видео
         var tempFileListPath = Path.Combine(Path.GetTempPath(), "fileList.txt");
         await File.WriteAllLinesAsync(
-            tempFileListPath, 
-            videoPaths.Select(path => $"file '{path}'"), 
+            tempFileListPath,
+            videoPaths.Select(path => $"file '{path}'"),
             token
         );
 
@@ -44,7 +46,10 @@ public class VideoService : IVideoService
             var conversion = FFmpeg.Conversions.New()
                 .AddParameter($"-f concat -safe 0 -i \"{tempFileListPath}\"")
                 .SetOutput(outputPath)
-                .AddParameter("-c copy"); // Без перекодирования
+                .AddParameter("-c:v libx264") // Кодирование с использованием H.264
+                .AddParameter("-preset fast") // Быстрая настройка кодека
+                .AddParameter("-crf 23") // Контроль качества (меньше значение = выше качество)
+                .AddParameter("-pix_fmt yuv420p"); // Совместимость с видеопроигрывателями
 
             // Запускаем процесс объединения
             await conversion.Start(token);
