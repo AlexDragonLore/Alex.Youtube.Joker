@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using Alex.YouTube.Joker.DomainServices;
 using Alex.YouTube.Joker.DomainServices.Facades;
 using Alex.YouTube.Joker.DomainServices.Services;
 using Alex.YouTube.Joker.Host.Facades;
@@ -21,6 +22,7 @@ builder.Services.AddHttpClient<IGptFacade, GptFacade>(client =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IJokeService, JokeService>();
 builder.Services.AddScoped<IVideoService, VideoService>();
+builder.Services.AddScoped<IContentGenerator, ContentGenerator>();
 
 
 var app = builder.Build();

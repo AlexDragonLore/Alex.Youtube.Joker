@@ -34,8 +34,7 @@ public class JokesController : ControllerBase
         var joke = await _jokeService.GetJokesForShort(request.Theme, ct);
 
         return Ok(joke);
-    }
-    
+    } 
         
     [HttpPost("voice")]
     public async Task<ActionResult> ToVoice([FromBody]ToVoiceRequest request, CancellationToken ct)
@@ -43,5 +42,5 @@ public class JokesController : ControllerBase
         var joke = await _gptFacade.ToVoice(request.Text, ct);
 
         return Ok(joke);
-    }
+    }    
 }
