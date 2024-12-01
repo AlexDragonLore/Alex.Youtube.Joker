@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Alex.YouTube.Joker.DomainServices\Alex.YouTube.Joker.DomainServices.csproj" />
       <ProjectReference Include="..\Alex.YouTube.Joker.Domain\Alex.YouTube.Joker.Domain.csproj" />
     </ItemGroup>
 

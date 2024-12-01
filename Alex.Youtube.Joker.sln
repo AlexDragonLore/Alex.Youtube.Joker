@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alex.YouTube.Joker.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alex.YouTube.Joker.Host", "Alex.YouTube.Joker.Host\Alex.YouTube.Joker.Host.csproj", "{72F387E2-BA51-40BB-B48C-9835D1CB8F34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alex.YouTube.Joker.DomainServices", "Alex.YouTube.Joker.DomainServices\Alex.YouTube.Joker.DomainServices.csproj", "{6BF4110C-CBDE-4E46-9360-362CB764310D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{72F387E2-BA51-40BB-B48C-9835D1CB8F34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72F387E2-BA51-40BB-B48C-9835D1CB8F34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72F387E2-BA51-40BB-B48C-9835D1CB8F34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BF4110C-CBDE-4E46-9360-362CB764310D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BF4110C-CBDE-4E46-9360-362CB764310D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BF4110C-CBDE-4E46-9360-362CB764310D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BF4110C-CBDE-4E46-9360-362CB764310D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

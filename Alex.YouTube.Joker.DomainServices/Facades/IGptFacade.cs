@@ -1,4 +1,4 @@
-namespace Alex.YouTube.Joker.Host.Facades;
+namespace Alex.YouTube.Joker.DomainServices.Facades;
 
 public interface IGptFacade
 {
