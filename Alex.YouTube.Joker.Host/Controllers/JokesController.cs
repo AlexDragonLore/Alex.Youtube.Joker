@@ -17,9 +17,18 @@ public class JokesController : ControllerBase
 
     
     [HttpPost]
-    public async Task<ActionResult> CreateJoke(CreateJokeRequest request, CancellationToken ct)
+    public async Task<ActionResult> CreateJoke([FromBody]CreateJokeRequest request, CancellationToken ct)
     {
         var joke = await _gptFacade.CreateJoke(request.Theme, ct);
+
+        return Ok(joke);
+    }
+    
+        
+    [HttpPost("voice")]
+    public async Task<ActionResult> ToVoice([FromBody]ToVoiceRequest request, CancellationToken ct)
+    {
+        var joke = await _gptFacade.ToVoice(request.Text, ct);
 
         return Ok(joke);
     }
