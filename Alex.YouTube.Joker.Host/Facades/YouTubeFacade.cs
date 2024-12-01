@@ -1,4 +1,5 @@
 using Alex.YouTube.Joker.Domain;
+using Alex.YouTube.Joker.DomainServices.Facades;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Upload;
@@ -6,109 +7,113 @@ using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 
-namespace Alex.YouTube.Joker.Host.Facades
+namespace Alex.YouTube.Joker.Host.Facades;
+
+public class YouTubeFacade : IYouTubeFacade
 {
-    public class YouTubeFacade
+    private readonly string _сlientSecret;
+    private readonly string _сlientId;
+
+    public YouTubeFacade(IConfiguration configuration)
     {
-        public YouTubeFacade(IConfiguration configuration)
-        {
-            _
-        }
+        _сlientSecret = configuration["YouTube:ClientSecret"]!;
+        _сlientId = configuration["YouTube:ClientId"]!;
+    }
 
-        public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
-        {
-            // Authenticate and get the YouTube service
-            var youtubeService = await Auth();
+    public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
+    {
+        // Authenticate and get the YouTube service
+        var youtubeService = await Auth();
 
-            // Create a new video resource
-            var video = new Video
+        // Create a new video resource
+        var video = new Video
+        {
+            Snippet = new VideoSnippet
             {
-                Snippet = new VideoSnippet
-                {
-                    Title = shorts.Title,
-                    Description = shorts.Description,
-                    Tags = shorts.Tags,
-                    CategoryId = "22" // "People & Blogs" category
-                },
-                Status = new VideoStatus
-                {
-                    PrivacyStatus = "public" // or "unlisted", "private"
-                }
-            };
-
-            // The path to the video file
-            var filePath = shorts.FilePath;
-
-            await using var fileStream = new FileStream(filePath, FileMode.Open);
-            // Create the request for uploading the video
-            var videosInsertRequest = youtubeService.Videos.Insert(video, "snippet,status", fileStream, GetMimeType(filePath));
-
-            // Event handler for upload progress
-            videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
-            // Event handler for upload response received
-            videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;
-
-            // Upload the video
-            await videosInsertRequest.UploadAsync(token);
-        }
-
-        private void VideosInsertRequest_ProgressChanged(IUploadProgress progress)
-        {
-            switch (progress.Status)
+                Title = shorts.Title,
+                Description = shorts.Description,
+                Tags = shorts.Tags,
+                CategoryId = "22" // "People & Blogs" category
+            },
+            Status = new VideoStatus
             {
-                case UploadStatus.Uploading:
-                    Console.WriteLine($"{progress.BytesSent} bytes sent.");
-                    break;
-
-                case UploadStatus.Completed:
-                    Console.WriteLine("Upload completed.");
-                    break;
-
-                case UploadStatus.Failed:
-                    Console.WriteLine($"An error prevented the upload from completing.\n{progress.Exception}");
-                    break;
+                PrivacyStatus = "public" // or "unlisted", "private"
             }
-        }
+        };
 
-        private void VideosInsertRequest_ResponseReceived(Video video)
+        // The path to the video file
+        var filePath = shorts.FilePath;
+
+        await using var fileStream = new FileStream(filePath, FileMode.Open);
+        // Create the request for uploading the video
+        var videosInsertRequest =
+            youtubeService.Videos.Insert(video, "snippet,status", fileStream, GetMimeType(filePath));
+
+        // Event handler for upload progress
+        videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
+        // Event handler for upload response received
+        videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;
+
+        // Upload the video
+        await videosInsertRequest.UploadAsync(token);
+    }
+
+    private void VideosInsertRequest_ProgressChanged(IUploadProgress progress)
+    {
+        switch (progress.Status)
         {
-            Console.WriteLine($"Video id '{video.Id}' was successfully uploaded as a YouTube Short.");
+            case UploadStatus.Uploading:
+                Console.WriteLine($"{progress.BytesSent} bytes sent.");
+                break;
+
+            case UploadStatus.Completed:
+                Console.WriteLine("Upload completed.");
+                break;
+
+            case UploadStatus.Failed:
+                Console.WriteLine($"An error prevented the upload from completing.\n{progress.Exception}");
+                break;
         }
+    }
 
-        private async Task<YouTubeService> Auth()
-        {
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                new ClientSecrets
-                {
-                    ClientId = "YOUR_CLIENT_ID",
-                    ClientSecret = "YOUR_CLIENT_SECRET",
-                },
-                new[] { YouTubeService.Scope.YoutubeUpload },
-                "user",
-                CancellationToken.None,
-                new FileDataStore(this.GetType().ToString())
-            );
+    private void VideosInsertRequest_ResponseReceived(Video video)
+    {
+        Console.WriteLine($"Video id '{video.Id}' was successfully uploaded as a YouTube Short.");
+    }
 
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+    private async Task<YouTubeService> Auth()
+    {
+        var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+            new ClientSecrets
             {
-                HttpClientInitializer = credential,
-                ApplicationName = this.GetType().ToString()
-            });
+                ClientId = _сlientId,
+                ClientSecret = _сlientSecret,
+            },
+            new[] { YouTubeService.Scope.YoutubeUpload },
+            "user",
+            CancellationToken.None,
+            new FileDataStore(this.GetType().ToString())
+        );
 
-            return youtubeService;
-        }
-
-        private string GetMimeType(string fileName)
+        var youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
-            var extension = Path.GetExtension(fileName).ToLowerInvariant();
-            switch (extension)
-            {
-                case ".mp4": return "video/mp4";
-                case ".mov": return "video/quicktime";
-                case ".avi": return "video/x-msvideo";
-                // Add more cases as needed
-                default: return "video/*";
-            }
+            HttpClientInitializer = credential,
+            ApplicationName = this.GetType().ToString()
+        });
+
+        return youtubeService;
+    }
+
+    private string GetMimeType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        switch (extension)
+        {
+            case ".mp4": return "video/mp4";
+            case ".mov": return "video/quicktime";
+            case ".avi": return "video/x-msvideo";
+            // Add more cases as needed
+            default: return "video/*";
         }
     }
 }
