@@ -10,8 +10,9 @@ namespace Alex.YouTube.Joker.Host.Facades
 {
     public class YouTubeFacade
     {
-        public YouTubeFacade()
+        public YouTubeFacade(IConfiguration configuration)
         {
+            _
         }
 
         public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
