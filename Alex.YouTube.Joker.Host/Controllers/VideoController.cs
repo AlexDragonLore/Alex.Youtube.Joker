@@ -23,26 +23,26 @@ public class VideoController : ControllerBase
     }
 
     [HttpPost("from-audio")]
-    public async Task<ActionResult> Create([FromBody]VideoRequest request, CancellationToken ct)
+    public async Task<ActionResult> Create([FromBody] VideoRequest request, CancellationToken ct)
     {
         await _videoService.CreateVideoWithXabe(request, ct);
 
         return Ok();
     }
-    
+
     [HttpPost("generate-shorts")]
-    public async Task<ActionResult> CreateJoke([FromBody]CreateJokeRequest request, CancellationToken ct)
+    public async Task<ActionResult> CreateJoke([FromBody] CreateJokeRequest request, CancellationToken ct)
     {
         await _contentGenerator.GenerateShorts(request.Theme, ct);
-        
+
         return Ok();
-    }     
-    
+    }
+
     [HttpPost("upload-short")]
-    public async Task<ActionResult> UploadShort([FromBody]YouTubeShort request, CancellationToken ct)
+    public async Task<ActionResult> UploadShort([FromBody] YouTubeShort request, CancellationToken ct)
     {
         await _youTubeFacade.UploadShort(request, ct);
 
         return Ok();
-    }  
+    }
 }

@@ -79,7 +79,7 @@ public class GptFacade : IGptFacade
 
         return tempFilePath;
     }
-    
+
     public async Task<string> ToImage(string prompt, CancellationToken token)
     {
         var requestBody = new

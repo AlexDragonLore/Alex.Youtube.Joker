@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 var openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
 
 builder.Services.AddHttpClient<IGptFacade, GptFacade>(client =>
-{ 
+{
     client.BaseAddress = new Uri("https://api.openai.com/");
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
 });

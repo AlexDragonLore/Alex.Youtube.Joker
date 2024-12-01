@@ -16,16 +16,16 @@ public class JokeService : IJokeService
 
     public async Task<IReadOnlyCollection<Joke>> GetJokesForShort(string theme, CancellationToken ct)
     {
-        var jokes = await Task.WhenAll(Enumerable.Range(0, 6).Select(s=> GetJoke(theme, ct)));
-        
-        return jokes; 
+        var jokes = await Task.WhenAll(Enumerable.Range(0, 6).Select(s => GetJoke(theme, ct)));
+
+        return jokes;
     }
 
     private async Task<Joke> GetJoke(string theme, CancellationToken ct)
     {
         var joke = await _gptFacade.GenerateText($"Расскажи смешную шутку на тему: {theme}. Напиши ТОЛЬКО шутку.", ct);
-        var voice =await _gptFacade.ToVoice(joke, ct);
-        var image = _imageService.GetRandomImage();
+        var voice = await _gptFacade.ToVoice(joke, ct);
+        var image = _imageService.GetRandomImageWithText(joke);
 
         return new Joke
         {

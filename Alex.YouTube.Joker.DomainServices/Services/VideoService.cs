@@ -9,7 +9,7 @@ public class VideoService : IVideoService
     {
         // Установите путь к FFmpeg
         FFmpeg.SetExecutablesPath(@"C:\Users\Dunts\ffmpeg\bin");
-        
+
         // Создание видео из изображения и аудио
         var conversion = FFmpeg.Conversions.New()
             .AddParameter($"-loop 1 -i \"{request.ImagePath}\"") // Изображение

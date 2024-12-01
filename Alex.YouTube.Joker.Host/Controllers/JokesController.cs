@@ -19,28 +19,28 @@ public class JokesController : ControllerBase
         _jokeService = jokeService;
     }
 
-    
+
     [HttpPost]
-    public async Task<ActionResult> CreateJoke([FromBody]CreateJokeRequest request, CancellationToken ct)
+    public async Task<ActionResult> CreateJoke([FromBody] CreateJokeRequest request, CancellationToken ct)
     {
         var joke = await _gptFacade.GenerateText(request.Theme, ct);
 
         return Ok(joke);
-    }    
-    
+    }
+
     [HttpPost("for-shorts")]
-    public async Task<ActionResult> GetJokesForShort([FromBody]CreateJokeRequest request, CancellationToken ct)
+    public async Task<ActionResult> GetJokesForShort([FromBody] CreateJokeRequest request, CancellationToken ct)
     {
         var joke = await _jokeService.GetJokesForShort(request.Theme, ct);
 
         return Ok(joke);
-    } 
-        
+    }
+
     [HttpPost("voice")]
-    public async Task<ActionResult> ToVoice([FromBody]ToVoiceRequest request, CancellationToken ct)
+    public async Task<ActionResult> ToVoice([FromBody] ToVoiceRequest request, CancellationToken ct)
     {
         var joke = await _gptFacade.ToVoice(request.Text, ct);
 
         return Ok(joke);
-    }    
+    }
 }

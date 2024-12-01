@@ -28,12 +28,12 @@ public class ContentGenerator : IContentGenerator
 
         var outputVideos = new List<string>();
 
-        var seed = Random.Shared.NextInt64(100_000, 1_000_000) ;
-        
+        var seed = Random.Shared.NextInt64(100_000, 1_000_000);
+
         foreach (var joke in jokes)
         {
             var output = $"C:\\Users\\Dunts\\youtube\\joke_{seed}_{outputVideos.Count + 1}.mp4";
-        
+
             await _videoService.CreateVideoWithXabe(new VideoRequest
             {
                 ImagePath = joke.ImagePath,
@@ -46,9 +46,9 @@ public class ContentGenerator : IContentGenerator
             outputVideos.Add(output);
             _logger.LogInformation("Video generated for joke {joke}", joke);
         }
-        
+
         var outputFull = $"C:\\Users\\Dunts\\youtube\\joke_{seed}.mp4";
-        
+
         await _videoService.UnionVideos(outputVideos, outputFull, token);
 
         foreach (var uVideo in outputVideos)
@@ -56,11 +56,11 @@ public class ContentGenerator : IContentGenerator
             if (File.Exists(uVideo))
             {
                 File.Delete(uVideo);
-            }       
+            }
         }
-        
+
         _logger.LogInformation("Full video generated for joke {theme}", theme);
-        
+
         await _youTubeFacade.UploadShort(new YouTubeShort
         {
             Title = theme,
@@ -68,7 +68,7 @@ public class ContentGenerator : IContentGenerator
             FilePath = outputFull,
             Tags = ["Анекдоты"]
         }, token);
-        
+
         _logger.LogInformation("Video posted on theme, {theme}", theme);
     }
 }
