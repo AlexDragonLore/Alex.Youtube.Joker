@@ -23,27 +23,41 @@ public class ContentGenerator : IContentGenerator
     public async Task GenerateShorts(string theme, CancellationToken token)
     {
         var jokes = await _jokeService.GetJokesForShort(theme, token);
-        
-        _logger.LogInformation("Jokes created on theme, {theme}", theme);
-        
-        var output = $"C:\\Users\\Dunts\\youtube\\joke_{Random.Shared.NextInt64(100_000, 1_000_000)}.mp4";
-        
-        await _videoService.CreateVideoWithXabe(new VideoRequest
-        {
-            ImagePath = @"C:\Users\Dunts\youtube\oskar-smethurst-B1GtwanCbiw-unsplash.jpg",
-            AudioPath = jokes,
-            OutputVideoPath = output,
-            JokeText = "",
-            ThemeText = theme
-        }, token);
 
-        _logger.LogInformation("Video generated on theme, {theme}", theme);
+        _logger.LogInformation("Jokes created on theme, {theme}", theme);
+
+        var outputVideos = new List<string>();
+
+        var seed = Random.Shared.NextInt64(100_000, 1_000_000) ;
+        
+        foreach (var joke in jokes)
+        {
+            var output = $"C:\\Users\\Dunts\\youtube\\joke_{seed}_{outputVideos.Count + 1}.mp4";
+        
+            await _videoService.CreateVideoWithXabe(new VideoRequest
+            {
+                ImagePath = joke.ImagePath,
+                AudioPath = joke.AudioPath,
+                OutputVideoPath = output,
+                JokeText = joke.Text,
+                ThemeText = joke.Theme
+            }, token);
+
+            outputVideos.Add(output);
+            _logger.LogInformation("Video generated for joke {joke}", joke);
+        }
+        
+        var outputFull = $"C:\\Users\\Dunts\\youtube\\joke_{seed}.mp4";
+        
+        await _videoService.UnionVideos(outputVideos, outputFull, token);
+        
+        _logger.LogInformation("Full video generated for joke {theme}", theme);
         
         await _youTubeFacade.UploadShort(new YouTubeShort
         {
             Title = theme,
-            Description = $"Анекдоты на теуму: {theme}",
-            FilePath = output,
+            Description = $"Анекдоты на тему: {theme}",
+            FilePath = outputFull,
             Tags = ["Анекдоты"]
         }, token);
         

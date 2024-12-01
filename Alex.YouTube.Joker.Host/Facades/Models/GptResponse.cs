@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 
 namespace Alex.YouTube.Joker.Host.Facades.Models;
 
-
-
     public class Choice
     {
         [JsonPropertyName("index")]

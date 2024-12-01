@@ -23,7 +23,7 @@ public class JokesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateJoke([FromBody]CreateJokeRequest request, CancellationToken ct)
     {
-        var joke = await _gptFacade.CreateJoke(request.Theme, ct);
+        var joke = await _gptFacade.GenerateText(request.Theme, ct);
 
         return Ok(joke);
     }    
