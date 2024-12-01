@@ -6,15 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
-builder.Services.AddScoped<IGptFacade, GptFacade>();
 
-builder.Services.AddHttpClient<GptFacade>(client =>
+
+var openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
+
+builder.Services.AddHttpClient<IGptFacade, GptFacade>(client =>
 { 
-    var openAiApiKey = builder.Configuration["OpenAI:ApiKey"];
     client.BaseAddress = new Uri("https://api.openai.com/");
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
 });
+
+builder.Services.AddControllers();
+
+
+
 
 var app = builder.Build();
 
