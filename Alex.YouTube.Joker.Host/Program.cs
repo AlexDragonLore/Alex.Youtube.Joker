@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using Alex.YouTube.Joker.DomainServices;
 using Alex.YouTube.Joker.DomainServices.Facades;
 using Alex.YouTube.Joker.DomainServices.Services;
+using Alex.YouTube.Joker.Host;
 using Alex.YouTube.Joker.Host.Facades;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddScoped<IContentGenerator, ContentGenerator>();
 builder.Services.AddScoped<IYouTubeFacade, YouTubeFacade>();
 builder.Services.AddScoped<IImageService, ImageService>();
-
+builder.Services.AddHostedService<ShortsGenerator>();
 
 var app = builder.Build();
 
