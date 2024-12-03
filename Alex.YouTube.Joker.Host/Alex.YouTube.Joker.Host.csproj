@@ -17,4 +17,8 @@
       <ProjectReference Include="..\Alex.YouTube.Joker.Domain\Alex.YouTube.Joker.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="images\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>

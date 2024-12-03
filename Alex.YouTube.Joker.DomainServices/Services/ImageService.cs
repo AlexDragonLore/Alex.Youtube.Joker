@@ -7,7 +7,7 @@ public class ImageService : IImageService
     public string GetRandomImageWithText(string jokeText)
     {
         // Укажите путь к директории с изображениями
-        var directoryPath = @"C:\Users\Dunts\youtube\images";
+        var directoryPath = Path.Combine(AppContext.BaseDirectory, "images");
 
         if (!Directory.Exists(directoryPath))
         {

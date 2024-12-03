@@ -18,7 +18,7 @@ builder.Services.AddHttpClient<IGptFacade, GptFacade>(client =>
     client.BaseAddress = new Uri("https://api.openai.com/");
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", openAiApiKey);
 });
-
+var s= AppDomain.CurrentDomain.BaseDirectory;
 builder.Services.AddControllers();
 builder.Services.AddScoped<IJokeService, JokeService>();
 builder.Services.AddScoped<IVideoService, VideoService>();
