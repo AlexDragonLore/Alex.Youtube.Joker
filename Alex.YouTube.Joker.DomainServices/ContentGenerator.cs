@@ -32,7 +32,7 @@ public class ContentGenerator : IContentGenerator
 
         foreach (var joke in jokes)
         {
-            var output = $"joke_{seed}_{outputVideos.Count + 1}.mp4";
+            var output = Path.Combine(Path.GetTempPath(), $"joke_{seed}_{outputVideos.Count + 1}.mp4");
 
             await _videoService.CreateVideoWithXabe(new VideoRequest
             {
@@ -47,7 +47,7 @@ public class ContentGenerator : IContentGenerator
             _logger.LogInformation("Video generated for joke {joke}", joke);
         }
 
-        var outputFull = $"joke_{seed}.mp4";
+        var outputFull = Path.Combine(Path.GetTempPath(), $"joke_{seed}.mp4");
 
         await _videoService.UnionVideos(outputVideos, outputFull, token);
 
