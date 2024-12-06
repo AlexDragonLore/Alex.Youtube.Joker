@@ -23,4 +23,8 @@
         <Content Include="images\**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="tokens\" />
+    </ItemGroup>
+
 </Project>

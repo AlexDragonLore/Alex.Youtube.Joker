@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Alex.YouTube.Joker.Domain;
 using Alex.YouTube.Joker.DomainServices.Facades;
 using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Services;
 using Google.Apis.Upload;
 using Google.Apis.Util.Store;
@@ -11,21 +14,64 @@ namespace Alex.YouTube.Joker.Host.Facades;
 
 public class YouTubeFacade : IYouTubeFacade
 {
+    private readonly string _credentialsFilePath;
     private readonly string _сlientSecret;
     private readonly string _сlientId;
-    private readonly string _credentialsFilePath;
+    private readonly string _refreshToken;
 
     public YouTubeFacade(IConfiguration configuration)
     {
         _сlientSecret = configuration["YouTube:ClientSecret"]!;
         _сlientId = configuration["YouTube:ClientId"]!;
+        _refreshToken = configuration["YouTube:RefreshToken"]!;
         _credentialsFilePath = Path.Combine(AppContext.BaseDirectory, "joker-443412-fb9cf01a4005.json");
     }
 
+    public async Task List(CancellationToken token)
+    {
+        // Authenticate and get the YouTube service
+        var youtubeService = await UseAccessToken();
+        
+        
+        // Create a new video resource
+        var channelsListRequest = youtubeService.Channels.List("snippet");
+        channelsListRequest.Mine = true;
+        var channelsListResponse = await channelsListRequest.ExecuteAsync();
+        var d = JsonSerializer.Serialize(channelsListResponse);
+    }
+    
+    public async Task<YouTubeService> UseAccessToken()
+    {
+        var credential = GoogleCredential.FromAccessToken(await RefreshAccessToken());
+
+        return  new YouTubeService(new BaseClientService.Initializer
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = "MyContainerApp"
+        });
+    }
+    
+    public async Task<string> RefreshAccessToken()
+    {
+
+        var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        {
+            ClientSecrets = new ClientSecrets
+            {
+                ClientId = _сlientId,
+                ClientSecret = _сlientSecret
+            }
+        });
+
+        var newToken = await flow.RefreshTokenAsync("user", _refreshToken, CancellationToken.None);
+        return newToken.AccessToken;
+    }
+
+    
     public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
     {
         // Authenticate and get the YouTube service
-        var youtubeService = await Auth();
+        var youtubeService = await Auth2();
 
         // Create a new video resource
         var video = new Video
@@ -35,7 +81,7 @@ public class YouTubeFacade : IYouTubeFacade
                 Title = shorts.Title,
                 Description = shorts.Description,
                 Tags = shorts.Tags,
-                CategoryId = "22" // "People & Blogs" category
+                CategoryId = "22", // "People & Blogs" category
             },
             Status = new VideoStatus
             {
@@ -86,8 +132,13 @@ public class YouTubeFacade : IYouTubeFacade
     private async Task<YouTubeService> Auth()
     {
         
-        var credential = GoogleCredential.FromFile(_credentialsFilePath)
-            .CreateScoped(YouTubeService.Scope.YoutubeUpload);
+        var credential = GoogleCredential.FromFile(_credentialsFilePath).CreateScoped(new[]
+        {
+            YouTubeService.Scope.YoutubeReadonly, // Для чтения данных о канале
+            YouTubeService.Scope.YoutubeUpload ,
+            YouTubeService.Scope.YoutubeChannelMembershipsCreator
+            // Для загрузки видео
+        });
 
         var youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
@@ -98,6 +149,29 @@ public class YouTubeFacade : IYouTubeFacade
         return youtubeService;
     }
 
+    private async Task<YouTubeService> Auth2()
+    {
+        var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+            new ClientSecrets
+            {
+                ClientId =_сlientId,
+                ClientSecret = _сlientSecret,
+            },
+            new[] { YouTubeService.Scope.YoutubeReadonly, YouTubeService.Scope.YoutubeUpload },
+            "user",
+            CancellationToken.None,
+            new FileDataStore("tokens", true) // Локальная директория для токенов
+        );
+
+        var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+        {
+            HttpClientInitializer = credential,
+            ApplicationName = this.GetType().ToString()
+        });
+
+        return youtubeService;
+    }
+    
     private string GetMimeType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

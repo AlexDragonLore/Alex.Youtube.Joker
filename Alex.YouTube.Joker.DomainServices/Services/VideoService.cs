@@ -8,7 +8,7 @@ public class VideoService : IVideoService
     public async Task CreateVideoWithXabe(VideoRequest request, CancellationToken token)
     {
         // Установите путь к FFmpeg
-        FFmpeg.SetExecutablesPath("/usr/bin");
+        FFmpeg.SetExecutablesPath(@"C:\Users\Dunts\ffmpeg\bin");
 
         // Создание видео из изображения и аудио
         var conversion = FFmpeg.Conversions.New()

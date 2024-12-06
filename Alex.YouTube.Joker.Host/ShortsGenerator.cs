@@ -1,5 +1,6 @@
 using Alex.YouTube.Joker.Domain;
 using Alex.YouTube.Joker.DomainServices;
+using Alex.YouTube.Joker.DomainServices.Facades;
 
 namespace Alex.YouTube.Joker.Host;
 
@@ -19,7 +20,7 @@ public class ShortsGenerator : IHostedService
         try
         {
             using var scope = _serviceScopeFactory.CreateScope();
-
+            
             await scope.ServiceProvider.GetRequiredService<IContentGenerator>()
                 .GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], cancellationToken);
         }
