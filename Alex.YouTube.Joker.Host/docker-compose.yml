@@ -1,0 +1,6 @@
+﻿services:
+  alex.youtube.joker.host:
+    image: alex.youtube.joker.host
+    build:
+      context: .
+      dockerfile: Alex.YouTube.Joker.Host/Dockerfile

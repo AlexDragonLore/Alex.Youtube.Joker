@@ -399,3 +399,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 *.idea/
+
+joker-443412-fb9cf01a4005.json

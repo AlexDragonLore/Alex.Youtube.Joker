@@ -44,9 +44,9 @@ public class GptFacade : IGptFacade
         var responseContent = await response.Content.ReadAsStringAsync(token);
         var gptResponse = JsonSerializer.Deserialize<GptResponse>(responseContent!);
 
-        var joke = gptResponse!.Choices[0].Message.Content;
+        var joke = gptResponse!.Choices?[0].Message!.Content;
 
-        return joke;
+        return joke!;
     }
 
     public async Task<string> ToVoice(string text, CancellationToken token)
@@ -113,7 +113,7 @@ public class GptFacade : IGptFacade
 
         // Декодируем Base64 в файл
         var tempFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.png");
-        var imageBytes = Convert.FromBase64String(base64Image);
+        var imageBytes = Convert.FromBase64String(base64Image!);
 
         await File.WriteAllBytesAsync(tempFilePath, imageBytes, token);
 

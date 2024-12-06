@@ -13,11 +13,13 @@ public class YouTubeFacade : IYouTubeFacade
 {
     private readonly string _сlientSecret;
     private readonly string _сlientId;
+    private readonly string _credentialsFilePath;
 
     public YouTubeFacade(IConfiguration configuration)
     {
         _сlientSecret = configuration["YouTube:ClientSecret"]!;
         _сlientId = configuration["YouTube:ClientId"]!;
+        _credentialsFilePath = Path.Combine(AppContext.BaseDirectory, "joker-443412-fb9cf01a4005.json");
     }
 
     public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
@@ -83,22 +85,14 @@ public class YouTubeFacade : IYouTubeFacade
 
     private async Task<YouTubeService> Auth()
     {
-        var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-            new ClientSecrets
-            {
-                ClientId = _сlientId,
-                ClientSecret = _сlientSecret,
-            },
-            new[] { YouTubeService.Scope.YoutubeUpload },
-            "user",
-            CancellationToken.None,
-            new FileDataStore(this.GetType().ToString())
-        );
+        
+        var credential = GoogleCredential.FromFile(_credentialsFilePath)
+            .CreateScoped(YouTubeService.Scope.YoutubeUpload);
 
         var youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = this.GetType().ToString()
+            ApplicationName = "AlexYouTubeJoker"
         });
 
         return youtubeService;

@@ -16,6 +16,7 @@ public class JokeService : IJokeService
 
     public async Task<IReadOnlyCollection<Joke>> GetJokesForShort(string theme, CancellationToken ct)
     {
+        var image = _imageService.GetRandomImageWithText("ds");
         var jokes = await Task.WhenAll(Enumerable.Range(0, 6).Select(s => GetJoke(theme, ct)));
 
         return jokes;

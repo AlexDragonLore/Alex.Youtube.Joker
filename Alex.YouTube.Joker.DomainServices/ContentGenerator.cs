@@ -44,7 +44,7 @@ public class ContentGenerator : IContentGenerator
             }, token);
 
             outputVideos.Add(output);
-            _logger.LogInformation("Video generated for joke {joke}", joke);
+            _logger.LogInformation("Video generated for joke {joke}", joke.Text);
         }
 
         var outputFull = Path.Combine(Path.GetTempPath(), $"joke_{seed}.mp4");
