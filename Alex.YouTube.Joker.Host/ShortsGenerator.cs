@@ -17,21 +17,25 @@ public class ShortsGenerator : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
+            try
+            {
+                using var scope = _serviceScopeFactory.CreateScope();
             
-            await scope.ServiceProvider.GetRequiredService<IContentGenerator>()
-                .GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], cancellationToken);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, e.Message);
-        }
+                await scope.ServiceProvider.GetRequiredService<IContentGenerator>()
+                    .GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
 
-        var delay = TimeSpan.FromHours(3).Add(TimeSpan.FromMinutes(Random.Shared.NextInt64(0, 120)));
-        _logger.LogInformation("Sleep for minutes {minutes}", delay.TotalMinutes);
-        await Task.Delay(delay, cancellationToken);
+            var delay = TimeSpan.FromHours(3).Add(TimeSpan.FromMinutes(Random.Shared.NextInt64(0, 120)));
+            _logger.LogInformation("[{now}]Sleep for minutes {minutes}", DateTime.UtcNow, delay.TotalMinutes);
+            await Task.Delay(delay, cancellationToken);
+        }
+        
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

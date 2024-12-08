@@ -30,27 +30,27 @@ public class YouTubeFacade : IYouTubeFacade
     public async Task List(CancellationToken token)
     {
         // Authenticate and get the YouTube service
-        var youtubeService = await UseAccessToken();
-        
-        
+        var youtubeService = await Auth2();
+
+
         // Create a new video resource
         var channelsListRequest = youtubeService.Channels.List("snippet");
         channelsListRequest.Mine = true;
         var channelsListResponse = await channelsListRequest.ExecuteAsync();
         var d = JsonSerializer.Serialize(channelsListResponse);
     }
-    
+
     public async Task<YouTubeService> UseAccessToken()
     {
         var credential = GoogleCredential.FromAccessToken(await RefreshAccessToken());
 
-        return  new YouTubeService(new BaseClientService.Initializer
+        return new YouTubeService(new BaseClientService.Initializer
         {
             HttpClientInitializer = credential,
             ApplicationName = "MyContainerApp"
         });
     }
-    
+
     public async Task<string> RefreshAccessToken()
     {
 
@@ -67,11 +67,11 @@ public class YouTubeFacade : IYouTubeFacade
         return newToken.AccessToken;
     }
 
-    
+
     public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
     {
         // Authenticate and get the YouTube service
-        var youtubeService = await Auth2();
+        var youtubeService = await UseAccessToken();
 
         // Create a new video resource
         var video = new Video
@@ -131,11 +131,11 @@ public class YouTubeFacade : IYouTubeFacade
 
     private async Task<YouTubeService> Auth()
     {
-        
+
         var credential = GoogleCredential.FromFile(_credentialsFilePath).CreateScoped(new[]
         {
             YouTubeService.Scope.YoutubeReadonly, // Для чтения данных о канале
-            YouTubeService.Scope.YoutubeUpload ,
+            YouTubeService.Scope.YoutubeUpload,
             YouTubeService.Scope.YoutubeChannelMembershipsCreator
             // Для загрузки видео
         });
@@ -154,7 +154,7 @@ public class YouTubeFacade : IYouTubeFacade
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             new ClientSecrets
             {
-                ClientId =_сlientId,
+                ClientId = _сlientId,
                 ClientSecret = _сlientSecret,
             },
             new[] { YouTubeService.Scope.YoutubeReadonly, YouTubeService.Scope.YoutubeUpload },
@@ -171,7 +171,7 @@ public class YouTubeFacade : IYouTubeFacade
 
         return youtubeService;
     }
-    
+
     private string GetMimeType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

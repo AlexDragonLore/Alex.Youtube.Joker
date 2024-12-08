@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
       <PackageReference Include="SkiaSharp" Version="2.116.0" />
       <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.116.0" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
@@ -15,12 +16,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Alex.YouTube.Joker.Domain\Alex.YouTube.Joker.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-        <HintPath>..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\8.0.8\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-      </Reference>
     </ItemGroup>
 
 </Project>
