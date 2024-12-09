@@ -20,13 +20,11 @@ public class GptFacade : IGptFacade
     {
         var requestBody = new
         {
-            model = "gpt-4o-mini",
+            model = "o1-mini",
             messages = new[]
             {
                 new { role = "user", content = prompt }
-            },
-            max_tokens = 60,
-            temperature = 0.7,
+            }
         };
 
         var requestContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8,
