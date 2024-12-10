@@ -24,8 +24,8 @@ public class ShortsGenerator : IHostedService
             {
                 using var scope = _serviceScopeFactory.CreateScope();
                 
-               // await scope.ServiceProvider.GetRequiredService<IContentGenerator>()
-                //    .GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], cancellationToken);
+                await scope.ServiceProvider.GetRequiredService<IContentGenerator>()
+                    .GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], cancellationToken);
             }
             catch (Exception e)
             {
