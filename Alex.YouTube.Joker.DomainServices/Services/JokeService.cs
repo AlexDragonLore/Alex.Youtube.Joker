@@ -27,7 +27,7 @@ public class JokeService : IJokeService
 
     private async Task<Joke> GetJoke(string theme, CancellationToken ct)
     {
-        var joke = await _gptFacade.GenerateText($"Расскажи смешную шутку на тему: {theme} шутка должна быть жизненой. Напиши ТОЛЬКО шутку.", ct);
+        var joke = await _gptFacade.GenerateText($"Придумай одну действительно смешную, понятную и жизненную шутку на тему: {theme}. Пусть шутка будет короткой и основанной на узнаваемой ситуации, которую легко представить. Напиши ТОЛЬКО шутку, без пояснений и предисловий.", ct);
         _logger.LogInformation("Generated Joke {joke}", joke);
         var voice = await _gptFacade.ToVoice(joke, ct);
         var image = _imageService.GetRandomImageWithText(joke);

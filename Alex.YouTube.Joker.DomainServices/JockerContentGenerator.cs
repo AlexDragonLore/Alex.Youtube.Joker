@@ -1,22 +1,27 @@
 using Alex.YouTube.Joker.Domain;
 using Alex.YouTube.Joker.DomainServices.Facades;
+using Alex.YouTube.Joker.DomainServices.Options;
 using Alex.YouTube.Joker.DomainServices.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Alex.YouTube.Joker.DomainServices;
 
-public class ContentGenerator : IContentGenerator
+public class JockerContentGenerator : IContentGenerator
 {
     private readonly IJokeService _jokeService;
     private readonly IVideoService _videoService;
     private readonly IYouTubeFacade _youTubeFacade;
-    private readonly ILogger<ContentGenerator> _logger;
+    private readonly IChannelOptions _channelOptions;
+    private readonly ILogger<JockerContentGenerator> _logger;
 
-    public ContentGenerator(IJokeService jokeService, IVideoService videoService, IYouTubeFacade youTubeFacade, ILogger<ContentGenerator> logger)
+    public JockerContentGenerator(IJokeService jokeService, IVideoService videoService, IYouTubeFacade youTubeFacade,
+        IChannelOptions channelOptions,
+        ILogger<JockerContentGenerator> logger)
     {
         _jokeService = jokeService;
         _videoService = videoService;
         _youTubeFacade = youTubeFacade;
+        _channelOptions = channelOptions;
         _logger = logger;
     }
 
@@ -59,7 +64,7 @@ public class ContentGenerator : IContentGenerator
             }
         }
 
-        _logger.LogInformation("Full video generated for joke {theme}", theme);
+        _logger.LogInformation("Full video {outputFull} generated for joke {theme}", outputFull, theme);
 
         await _youTubeFacade.UploadShort(new YouTubeShort
         {
@@ -67,7 +72,7 @@ public class ContentGenerator : IContentGenerator
             Description = $"Анекдоты на тему: {theme}",
             FilePath = outputFull,
             Tags = ["Анекдоты"]
-        }, token);
+        }, _channelOptions.GetChannel("Jocker"), token);
 
         _logger.LogInformation("Video posted on theme, {theme}", theme);
     }

@@ -9,40 +9,15 @@ using Google.Apis.Upload;
 using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Channel = Alex.YouTube.Joker.Domain.Channel;
 
 namespace Alex.YouTube.Joker.Host.Facades;
 
 public class YouTubeFacade : IYouTubeFacade
 {
-    private readonly string _credentialsFilePath;
-    private readonly string _сlientSecret;
-    private readonly string _сlientId;
-    private readonly string _refreshToken;
-
-    public YouTubeFacade(IConfiguration configuration)
+    private async Task<YouTubeService> UseAccessToken(Channel channel)
     {
-        _сlientSecret = configuration["YouTube:ClientSecret"]!;
-        _сlientId = configuration["YouTube:ClientId"]!;
-        _refreshToken = configuration["YouTube:RefreshToken"]!;
-        _credentialsFilePath = Path.Combine(AppContext.BaseDirectory, "joker-443412-fb9cf01a4005.json");
-    }
-
-    public async Task List(CancellationToken token)
-    {
-        // Authenticate and get the YouTube service
-        var youtubeService = await Auth2();
-
-
-        // Create a new video resource
-        var channelsListRequest = youtubeService.Channels.List("snippet");
-        channelsListRequest.Mine = true;
-        var channelsListResponse = await channelsListRequest.ExecuteAsync();
-        var d = JsonSerializer.Serialize(channelsListResponse);
-    }
-
-    public async Task<YouTubeService> UseAccessToken()
-    {
-        var credential = GoogleCredential.FromAccessToken(await RefreshAccessToken());
+        var credential = GoogleCredential.FromAccessToken(await RefreshAccessToken(channel));
 
         return new YouTubeService(new BaseClientService.Initializer
         {
@@ -51,27 +26,27 @@ public class YouTubeFacade : IYouTubeFacade
         });
     }
 
-    public async Task<string> RefreshAccessToken()
+    private async Task<string> RefreshAccessToken(Channel channel)
     {
 
         var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
             {
-                ClientId = _сlientId,
-                ClientSecret = _сlientSecret
+                ClientId = channel.ClientId,
+                ClientSecret = channel.ClientSecret
             }
         });
 
-        var newToken = await flow.RefreshTokenAsync("user", _refreshToken, CancellationToken.None);
+        var newToken = await flow.RefreshTokenAsync("user", channel.RefreshToken, CancellationToken.None);
         return newToken.AccessToken;
     }
 
 
-    public async Task UploadShort(YouTubeShort shorts, CancellationToken token)
+    public async Task UploadShort(YouTubeShort shorts, Channel channel, CancellationToken token)
     {
         // Authenticate and get the YouTube service
-        var youtubeService = await UseAccessToken();
+        using var youtubeService = await UseAccessToken(channel);
 
         // Create a new video resource
         var video = new Video
@@ -129,33 +104,13 @@ public class YouTubeFacade : IYouTubeFacade
         Console.WriteLine($"Video id '{video.Id}' was successfully uploaded as a YouTube Short.");
     }
 
-    private async Task<YouTubeService> Auth()
-    {
-
-        var credential = GoogleCredential.FromFile(_credentialsFilePath).CreateScoped(new[]
-        {
-            YouTubeService.Scope.YoutubeReadonly, // Для чтения данных о канале
-            YouTubeService.Scope.YoutubeUpload,
-            YouTubeService.Scope.YoutubeChannelMembershipsCreator
-            // Для загрузки видео
-        });
-
-        var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-        {
-            HttpClientInitializer = credential,
-            ApplicationName = "AlexYouTubeJoker"
-        });
-
-        return youtubeService;
-    }
-
-    private async Task<YouTubeService> Auth2()
+    private async Task<YouTubeService> Auth2(Channel channel)
     {
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             new ClientSecrets
             {
-                ClientId = _сlientId,
-                ClientSecret = _сlientSecret,
+                ClientId = channel.ClientId,
+                ClientSecret = channel.ClientSecret,
             },
             new[] { YouTubeService.Scope.YoutubeReadonly, YouTubeService.Scope.YoutubeUpload },
             "user",
