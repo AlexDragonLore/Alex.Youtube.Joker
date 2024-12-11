@@ -1,4 +1,4 @@
-namespace Alex.YouTube.Joker.DomainServices;
+namespace Alex.YouTube.Joker.DomainServices.Generators;
 
 public interface IContentGenerator
 {

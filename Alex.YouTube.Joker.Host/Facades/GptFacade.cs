@@ -16,11 +16,11 @@ public class GptFacade : IGptFacade
         _httpClient = httpClient;
     }
 
-    public async Task<string> GenerateText(string prompt, CancellationToken token)
+    public async Task<string> GenerateText(string prompt, bool smart, CancellationToken token)
     {
         var requestBody = new
         {
-            model = "o1-mini",
+            model = smart ? "o1-mini" : "gpt-4o-mini",
             messages = new[]
             {
                 new { role = "user", content = prompt }

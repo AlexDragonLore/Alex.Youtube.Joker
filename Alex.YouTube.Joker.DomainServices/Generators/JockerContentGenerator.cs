@@ -4,21 +4,21 @@ using Alex.YouTube.Joker.DomainServices.Options;
 using Alex.YouTube.Joker.DomainServices.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Alex.YouTube.Joker.DomainServices;
+namespace Alex.YouTube.Joker.DomainServices.Generators;
 
 public class JockerContentGenerator : IContentGenerator
 {
-    private readonly IJokeService _jokeService;
+    private readonly IContentService _contentService;
     private readonly IVideoService _videoService;
     private readonly IYouTubeFacade _youTubeFacade;
     private readonly IChannelOptions _channelOptions;
     private readonly ILogger<JockerContentGenerator> _logger;
 
-    public JockerContentGenerator(IJokeService jokeService, IVideoService videoService, IYouTubeFacade youTubeFacade,
+    public JockerContentGenerator(IContentService contentService, IVideoService videoService, IYouTubeFacade youTubeFacade,
         IChannelOptions channelOptions,
         ILogger<JockerContentGenerator> logger)
     {
-        _jokeService = jokeService;
+        _contentService = contentService;
         _videoService = videoService;
         _youTubeFacade = youTubeFacade;
         _channelOptions = channelOptions;
@@ -27,7 +27,7 @@ public class JockerContentGenerator : IContentGenerator
 
     public async Task GenerateShorts(string theme, CancellationToken token)
     {
-        var jokes = await _jokeService.GetJokesForShort(theme, token);
+        var jokes = await _contentService.GetJokesForShort(theme, token);
 
         _logger.LogInformation("Jokes created on theme, {theme}", theme);
 

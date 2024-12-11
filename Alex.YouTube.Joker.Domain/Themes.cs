@@ -2,6 +2,11 @@ namespace Alex.YouTube.Joker.Domain;
 
 public static class Themes
 {
+    public static readonly IReadOnlyList<string> Zodiacs =
+    [
+        "Овен", "Телец", "Близнецы", "Рак","Лев", "Дева", "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы", "Змееносец"
+    ];
+    
     public static readonly IReadOnlyList<string> All =
     [
         "Программист против аналитика",

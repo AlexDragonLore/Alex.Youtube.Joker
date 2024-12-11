@@ -1,9 +1,7 @@
 using Alex.YouTube.Joker.Domain;
-using Alex.YouTube.Joker.DomainServices;
-using Alex.YouTube.Joker.DomainServices.Facades;
-using Alex.YouTube.Joker.DomainServices.Options;
+using Alex.YouTube.Joker.DomainServices.Generators;
 
-namespace Alex.YouTube.Joker.Host;
+namespace Alex.YouTube.Joker.Host.Jobs;
 
 public class ShortsGenerator : IHostedService
 {
@@ -34,7 +32,7 @@ public class ShortsGenerator : IHostedService
 
             var delay = TimeSpan.FromHours(3).Add(TimeSpan.FromMinutes(Random.Shared.NextInt64(0, 120)));
             _logger.LogInformation("[{now}]Sleep for minutes {minutes}", DateTime.UtcNow, delay.TotalMinutes);
-            await Task.Delay(delay, cancellationToken);
+            //await Task.Delay(delay, cancellationToken);
         }
         
     }

@@ -104,7 +104,14 @@ public class YouTubeFacade : IYouTubeFacade
         Console.WriteLine($"Video id '{video.Id}' was successfully uploaded as a YouTube Short.");
     }
 
-    private async Task<YouTubeService> Auth2(Channel channel)
+    public async Task JustAuth2(Channel channel)
+    {
+        var s= await Auth2(channel);
+        var r =s.Channels.List("snippet");
+        await r.ExecuteAsync();
+    }
+    
+    public async Task<YouTubeService> Auth2(Channel channel)
     {
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             new ClientSecrets
@@ -121,7 +128,7 @@ public class YouTubeFacade : IYouTubeFacade
         var youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
-            ApplicationName = this.GetType().ToString()
+            ApplicationName = GetType().ToString()
         });
 
         return youtubeService;
