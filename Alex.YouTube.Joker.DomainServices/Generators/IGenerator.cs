@@ -1,6 +1,6 @@
 namespace Alex.YouTube.Joker.DomainServices.Generators;
 
-public interface IZodiacGenerator
+public interface IGenerator
 {
     Task GenerateShorts(CancellationToken token);
 }

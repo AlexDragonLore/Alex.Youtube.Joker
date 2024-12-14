@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Alex.YouTube.Joker.DomainServices.Generators;
 
-public class JockerContentGenerator : IContentGenerator
+public class JockerContentGenerator : IGenerator
 {
     private readonly IContentService _contentService;
     private readonly IVideoService _videoService;
@@ -75,5 +75,13 @@ public class JockerContentGenerator : IContentGenerator
         }, _channelOptions.GetChannel("Jocker"), token);
 
         _logger.LogInformation("Video posted on theme, {theme}", theme);
+    }
+
+    public async Task GenerateShorts(CancellationToken token)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            await GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], token);
+        }
     }
 }

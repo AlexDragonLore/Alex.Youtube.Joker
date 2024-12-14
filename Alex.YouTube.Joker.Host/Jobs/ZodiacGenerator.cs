@@ -1,16 +1,13 @@
-using Alex.YouTube.Joker.Domain;
-using Alex.YouTube.Joker.DomainServices.Facades;
 using Alex.YouTube.Joker.DomainServices.Generators;
-using Alex.YouTube.Joker.DomainServices.Options;
 
 namespace Alex.YouTube.Joker.Host.Jobs;
 
-public class ZodiacJob : IHostedService
+public class ContentJob : IHostedService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<ShortsGenerator> _logger;
+    private readonly ILogger<ContentJob> _logger;
 
-    public ZodiacJob(IServiceScopeFactory serviceScopeFactory, ILogger<ShortsGenerator> logger)
+    public ContentJob(IServiceScopeFactory serviceScopeFactory, ILogger<ContentJob> logger)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
@@ -24,7 +21,11 @@ public class ZodiacJob : IHostedService
             {
                 using var scope = _serviceScopeFactory.CreateScope();
 
-                await scope.ServiceProvider.GetRequiredService<IZodiacGenerator>().GenerateShorts(cancellationToken);
+                foreach (var generator in scope.ServiceProvider.GetServices<IGenerator>())
+                {
+                    await generator.GenerateShorts(cancellationToken);
+                }
+                
             }
             catch (Exception e)
             {

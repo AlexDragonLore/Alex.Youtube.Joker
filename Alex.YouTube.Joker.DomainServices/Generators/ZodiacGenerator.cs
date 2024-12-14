@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Alex.YouTube.Joker.DomainServices.Generators;
 
-public class ZodiacGenerator : IZodiacGenerator
+public class ZodiacGenerator : IGenerator
 {
     private readonly IContentService _contentService;
     private readonly IVideoService _videoService;
