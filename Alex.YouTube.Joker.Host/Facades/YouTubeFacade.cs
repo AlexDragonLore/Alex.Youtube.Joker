@@ -76,7 +76,11 @@ public class YouTubeFacade : IYouTubeFacade
         videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;
 
         // Upload the video
-        await videosInsertRequest.UploadAsync(token);
+        var result = await videosInsertRequest.UploadAsync(token);
+        if (result.Status == UploadStatus.Failed)
+        {
+            throw result.Exception;
+        }
     }
 
     private void VideosInsertRequest_ProgressChanged(IUploadProgress progress)

@@ -1,4 +1,6 @@
+using Alex.YouTube.Joker.DomainServices.Facades;
 using Alex.YouTube.Joker.DomainServices.Generators;
+using Alex.YouTube.Joker.DomainServices.Options;
 
 namespace Alex.YouTube.Joker.Host.Jobs;
 
@@ -21,6 +23,7 @@ public class ContentJob : IHostedService
             {
                 using var scope = _serviceScopeFactory.CreateScope();
 
+                //scope.ServiceProvider.GetService<IYouTubeFacade>()!.JustAuth2(scope.ServiceProvider.GetService<IChannelOptions>()!.GetChannel("Jocker")).Wait();
                 foreach (var generator in scope.ServiceProvider.GetServices<IGenerator>())
                 {
                     await generator.GenerateShorts(cancellationToken);

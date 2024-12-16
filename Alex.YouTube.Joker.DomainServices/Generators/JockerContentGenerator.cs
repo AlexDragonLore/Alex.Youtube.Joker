@@ -14,7 +14,8 @@ public class JockerContentGenerator : IGenerator
     private readonly IChannelOptions _channelOptions;
     private readonly ILogger<JockerContentGenerator> _logger;
 
-    public JockerContentGenerator(IContentService contentService, IVideoService videoService, IYouTubeFacade youTubeFacade,
+    public JockerContentGenerator(IContentService contentService, IVideoService videoService,
+        IYouTubeFacade youTubeFacade,
         IChannelOptions channelOptions,
         ILogger<JockerContentGenerator> logger)
     {
@@ -25,9 +26,11 @@ public class JockerContentGenerator : IGenerator
         _logger = logger;
     }
 
-    public async Task GenerateShorts(string theme, CancellationToken token)
+    public async Task GenerateShorts(string? theme, CancellationToken token)
     {
         var jokes = await _contentService.GetJokesForShort(theme, token);
+
+        theme ??= jokes.First().Theme;
 
         _logger.LogInformation("Jokes created on theme, {theme}", theme);
 
@@ -81,7 +84,7 @@ public class JockerContentGenerator : IGenerator
     {
         for (int i = 0; i < 6; i++)
         {
-            await GenerateShorts(Themes.All[Random.Shared.Next(0, Themes.All.Count - 1)], token);
+            await GenerateShorts(null, token);
         }
     }
 }

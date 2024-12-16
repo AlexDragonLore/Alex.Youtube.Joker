@@ -20,7 +20,7 @@ public class GptFacade : IGptFacade
     {
         var requestBody = new
         {
-            model = smart ? "o1-mini" : "gpt-4o-mini",
+            model = smart ? "o1-mini" : "gpt-4o",
             messages = new[]
             {
                 new { role = "user", content = prompt }

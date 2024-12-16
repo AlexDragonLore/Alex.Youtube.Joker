@@ -9,7 +9,9 @@ public class ContentService : IContentService
     private readonly IGptFacade _gptFacade;
     private readonly IImageService _imageService;
     private readonly ILogger<ContentService> _logger;
-
+    private readonly SemaphoreSlim _semaphore = new(3);
+    
+    
     public ContentService(IGptFacade gptFacade, IImageService imageService, ILogger<ContentService> logger)
     {
         _gptFacade = gptFacade;
@@ -17,8 +19,12 @@ public class ContentService : IContentService
         _logger = logger;
     }
 
-    public async Task<IReadOnlyCollection<Joke>> GetJokesForShort(string theme, CancellationToken ct)
+    public async Task<IReadOnlyCollection<Joke>> GetJokesForShort(string? theme, CancellationToken ct)
     {
+        theme ??= await _gptFacade.GenerateText(
+            "Придумай смешную тему для шуток, тема должна быть максимально случайна и актуальна. Напиши ТОЛЬКО тему, без пояснений и предисловий.",
+            false, ct);
+        
         var jokes = await Task.WhenAll(Enumerable.Range(0, 6).Select(s => GetJoke(theme, ct)));
 
         return jokes;
@@ -39,7 +45,22 @@ public class ContentService : IContentService
         predictText = predictText.Replace(Environment.NewLine, "");
         
         _logger.LogInformation("Generated predict {joke}", predictText);
-        var voice = await _gptFacade.ToVoice(predictText, ct);
+        string voice = null;
+        for (int i = 0; i < 5; i++)
+        {
+            try
+            {
+                voice = await _gptFacade.ToVoice(predictText, ct);
+            }
+            catch
+            {
+                if (i == 4)
+                {
+                    throw;
+                }
+            }
+        }
+        
         var image = _imageService.GetRandomImageWithText(predictText);
         
         return new ZodiacPredict
@@ -47,25 +68,40 @@ public class ContentService : IContentService
             Name = name,
             Text = predictText,
             ImagePath = image,
-            AudioPath = voice
+            AudioPath = voice!
         };
     }
 
     private async Task<Joke> GetJoke(string theme, CancellationToken ct)
     {
-        var joke = await _gptFacade.GenerateText($"Придумай одну действительно смешную, понятную и жизненную шутку на тему: {theme}. Пусть шутка будет короткой и основанной на узнаваемой ситуации, которую легко представить. Напиши ТОЛЬКО шутку, без пояснений и предисловий.", true, ct);
-        
-        joke = joke.Replace(Environment.NewLine, "");
-        _logger.LogInformation("Generated Joke {joke}", joke);
-        var voice = await _gptFacade.ToVoice(joke, ct);
-        var image = _imageService.GetRandomImageWithText(joke);
-
-        return new Joke
+        await _semaphore.WaitAsync(ct);
+        try
         {
-            Theme = theme,
-            Text = joke,
-            ImagePath = image,
-            AudioPath = voice
-        };
+            var joke = await _gptFacade.GenerateText(
+                $"Придумай одну действительно смешную, понятную и жизненную шутку на тему: {theme}. Пусть шутка будет короткой и основанной на узнаваемой ситуации, которую легко представить. Напиши ТОЛЬКО шутку, без пояснений, и предисловий, и не используй спец символов, и перенос строки.",
+                true, ct);
+
+            joke = joke.Replace(Environment.NewLine, "");
+            _logger.LogInformation("Generated Joke {joke}", joke);
+            var voice = await _gptFacade.ToVoice(joke, ct);
+            var image = _imageService.GetRandomImageWithText(joke);
+
+            return new Joke
+            {
+                Theme = theme,
+                Text = joke,
+                ImagePath = image,
+                AudioPath = voice
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 }

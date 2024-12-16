@@ -6,6 +6,7 @@ using Alex.YouTube.Joker.DomainServices.Options;
 using Alex.YouTube.Joker.DomainServices.Services;
 using Alex.YouTube.Joker.Host.Facades;
 using Alex.YouTube.Joker.Host.Jobs;
+using Google.Apis.YouTube.v3;
 
 var builder = WebApplication.CreateBuilder(args);
 
