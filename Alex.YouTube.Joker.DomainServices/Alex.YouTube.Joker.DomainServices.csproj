@@ -14,8 +14,4 @@
       <PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Alex.YouTube.Joker.Domain\Alex.YouTube.Joker.Domain.csproj" />
-    </ItemGroup>
-
 </Project>
